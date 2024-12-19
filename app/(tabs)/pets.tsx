@@ -21,8 +21,6 @@ interface Pet {
   breed: string;
 }
 
-const { width } = Dimensions.get("window");
-
 export default function PetsScreen() {
   const { userData, fetchUser } = useUser();
   const [refreshing, setRefreshing] = useState(false);
@@ -112,7 +110,7 @@ export default function PetsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F0F8FF",
+    backgroundColor: "#AEEFFF",
   },
   sectionTitle: {
     fontSize: 24,

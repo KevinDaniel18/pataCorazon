@@ -1,25 +1,18 @@
-import {
-  View,
-  Image,
-  StyleSheet,
-  TouchableOpacity,
-} from "react-native";
+import { View, Image, StyleSheet, TouchableOpacity } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useAuth } from "@/hooks/auth/AuthContext";
 import { useUser } from "@/hooks/user/UserContex";
 import ModalPost from "@/components/ModalPost";
 import { useState } from "react";
 import PetPosts from "@/components/PetPosts";
 
 export default function Index() {
-  const { onLogout } = useAuth();
   const { profilePicture } = useUser();
-  const [modalVisible, setModalVisible] = useState(false);
+  const [modalPostVisible, setModalPostVisible] = useState(false);
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={onLogout}>
+        <TouchableOpacity>
           <Image
             style={styles.image}
             source={
@@ -29,7 +22,7 @@ export default function Index() {
             }
           />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => setModalVisible(true)}>
+        <TouchableOpacity onPress={() => setModalPostVisible(true)}>
           <Ionicons
             name="add"
             size={30}
@@ -39,12 +32,13 @@ export default function Index() {
         </TouchableOpacity>
       </View>
 
-      <PetPosts/>
+      <PetPosts />
 
       <ModalPost
-        modalVisible={modalVisible}
-        setModalVisible={setModalVisible}
+        modalVisible={modalPostVisible}
+        setModalVisible={setModalPostVisible}
       />
+
     </View>
   );
 }
@@ -52,7 +46,7 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#E0F8FF",
+    backgroundColor: "#AEEFFF",
     padding: 20,
   },
   header: {

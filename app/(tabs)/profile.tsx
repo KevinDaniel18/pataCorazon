@@ -1,8 +1,15 @@
-import { View, StyleSheet, Text, ScrollView } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
 import React, { useEffect } from "react";
 import Avatar from "@/components/Avatar";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useUser } from "@/hooks/user/UserContex";
+import UserConfiguration from "@/components/UserConfiguration";
 
 const ProfileScreen = () => {
   const { userData } = useUser();
@@ -10,9 +17,20 @@ const ProfileScreen = () => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Avatar size={150} url={userData?.profilePicture!} />
-        <Text style={styles.text}>{userData?.name}</Text>
+        <Avatar size={100} url={userData?.profilePicture!} />
+        <View style={styles.userInfo}>
+          <Text style={styles.text}>{userData?.name}</Text>
+          <Text style={{color: "gray"}}>
+            {userData?.city} - {userData?.country}
+          </Text>
+          <TouchableOpacity
+            style={{ padding: 10, backgroundColor: "#fff", borderRadius: 10 }}
+          >
+            <Text>Cambiar foto de perfil</Text>
+          </TouchableOpacity>
+        </View>
       </View>
+      <UserConfiguration/>
     </ScrollView>
   );
 };
@@ -20,16 +38,20 @@ const ProfileScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#E0F8FF",
-    padding: 20,
+    backgroundColor: "#AEEFFF",
   },
   header: {
-    alignItems: "center",
+    flexDirection: "row",
+    gap: 20,
+    padding: 20
+  },
+  userInfo: {
+    rowGap: 5,
   },
   text: {
     color: "black",
     fontWeight: "bold",
-    fontSize: 15,
+    fontSize: 20,
     marginTop: 15,
   },
   detailsContent: {

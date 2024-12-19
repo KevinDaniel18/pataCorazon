@@ -10,6 +10,8 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { usePetForm } from "@/hooks/form/usePetForm";
 import * as ImagePicker from "expo-image-picker";
@@ -22,18 +24,17 @@ export function PetForm() {
   const [isUploading, setUploading] = useState(false);
 
   const resetForm = () => {
-    handleInput('name', '');
-    handleInput('breed', '');
-    handleInput('age', 0);
-    handleInput('size', '');
-    handleInput('location', '');
-    handleInput('description', '');
-    handleInput('isVaccinated', true);
-    handleInput('isSterilized', true);
-    handleInput('imageUrl', '');
+    handleInput("name", "");
+    handleInput("breed", "");
+    handleInput("age", 0);
+    handleInput("size", "");
+    handleInput("location", "");
+    handleInput("description", "");
+    handleInput("isVaccinated", true);
+    handleInput("isSterilized", true);
+    handleInput("imageUrl", "");
     setImageUri(null);
   };
-  
 
   const handleImagePick = async () => {
     try {
@@ -132,154 +133,179 @@ export function PetForm() {
 
   useEffect(() => {
     if (formData.imageUrl) {
-      resetForm(); // Limpiar el formulario después de que los datos hayan sido registrados
+      resetForm();
     }
-  }, [formData]); 
+  }, [formData]);
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>Registro de Mascota</Text>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.container}
+    >
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <Text style={styles.title}>Registro de Mascota</Text>
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Nombre</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Nombre de la mascota"
-          value={formData.name}
-          onChangeText={(value) => handleInput("name", value)}
-        />
-        {errorMsg.name && <Text style={styles.error}>{errorMsg.name}</Text>}
-      </View>
+        <View style={styles.imageContainer}>
+          <TouchableOpacity
+            style={styles.imagePicker}
+            onPress={handleImagePick}
+          >
+            {imageUri ? (
+              <Image source={{ uri: imageUri }} style={styles.image} />
+            ) : (
+              <Text style={styles.imagePickerText}>Seleccionar imagen</Text>
+            )}
+          </TouchableOpacity>
+        </View>
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Raza</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Raza de la mascota"
-          value={formData.breed}
-          onChangeText={(value) => handleInput("breed", value)}
-        />
-        {errorMsg.breed && <Text style={styles.error}>{errorMsg.breed}</Text>}
-      </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Nombre</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Nombre de la mascota"
+            value={formData.name}
+            onChangeText={(value) => handleInput("name", value)}
+          />
+          {errorMsg.name && <Text style={styles.error}>{errorMsg.name}</Text>}
+        </View>
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Edad</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Edad de la mascota"
-          keyboardType="numeric"
-          value={String(formData.age)}
-          onChangeText={(value) => handleInput("age", parseInt(value) || 0)}
-        />
-        {errorMsg.age && <Text style={styles.error}>{errorMsg.age}</Text>}
-      </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Raza</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Raza de la mascota"
+            value={formData.breed}
+            onChangeText={(value) => handleInput("breed", value)}
+          />
+          {errorMsg.breed && <Text style={styles.error}>{errorMsg.breed}</Text>}
+        </View>
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Tamaño</Text>
-        <Picker
-          selectedValue={formData.size}
-          onValueChange={(value) => handleInput("size", value)}
-          style={styles.picker}
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Edad</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Edad de la mascota"
+            keyboardType="numeric"
+            value={String(formData.age)}
+            onChangeText={(value) => handleInput("age", parseInt(value) || 0)}
+          />
+          {errorMsg.age && <Text style={styles.error}>{errorMsg.age}</Text>}
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Tamaño</Text>
+          <Picker
+            selectedValue={formData.size}
+            onValueChange={(value) => handleInput("size", value)}
+            style={styles.picker}
+          >
+            <Picker.Item label="Pequeño" value="SMALL" />
+            <Picker.Item label="Mediano" value="MEDIUM" />
+            <Picker.Item label="Grande" value="LARGE" />
+          </Picker>
+          {errorMsg.size && <Text style={styles.error}>{errorMsg.size}</Text>}
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Ubicación</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Ubicación de la mascota"
+            value={formData.location}
+            onChangeText={(value) => handleInput("location", value)}
+          />
+          {errorMsg.location && (
+            <Text style={styles.error}>{errorMsg.location}</Text>
+          )}
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Descripción</Text>
+          <TextInput
+            style={[styles.input, styles.textArea]}
+            placeholder="Descripción de la mascota"
+            multiline
+            value={formData.description}
+            onChangeText={(value) => handleInput("description", value)}
+          />
+          {errorMsg.description && (
+            <Text style={styles.error}>{errorMsg.description}</Text>
+          )}
+        </View>
+
+        <View style={styles.checkboxContainer}>
+          <TouchableOpacity
+            style={[
+              styles.checkbox,
+              formData.isVaccinated && styles.checkboxChecked,
+            ]}
+            onPress={() => handleInput("isVaccinated", !formData.isVaccinated)}
+          >
+            <Text style={styles.checkboxLabel}>Vacunado</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.checkbox,
+              formData.isSterilized && styles.checkboxChecked,
+            ]}
+            onPress={() => handleInput("isSterilized", !formData.isSterilized)}
+          >
+            <Text style={styles.checkboxLabel}>Esterilizado</Text>
+          </TouchableOpacity>
+        </View>
+
+        {isUploading && <ActivityIndicator size="large" color="#0000ff" />}
+
+        <TouchableOpacity
+          style={[
+            styles.submitButton,
+            (isUploading || isLoading) && styles.disabledButton,
+          ]}
+          onPress={handleSubmit}
+          disabled={isUploading || isLoading}
         >
-          <Picker.Item label="Pequeño" value="SMALL" />
-          <Picker.Item label="Mediano" value="MEDIUM" />
-          <Picker.Item label="Grande" value="LARGE" />
-        </Picker>
-        {errorMsg.size && <Text style={styles.error}>{errorMsg.size}</Text>}
-      </View>
-
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Ubicación</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Ubicación de la mascota"
-          value={formData.location}
-          onChangeText={(value) => handleInput("location", value)}
-        />
-        {errorMsg.location && (
-          <Text style={styles.error}>{errorMsg.location}</Text>
-        )}
-      </View>
-
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Descripción</Text>
-        <TextInput
-          style={[styles.input, styles.textArea]}
-          placeholder="Descripción de la mascota"
-          multiline
-          value={formData.description}
-          onChangeText={(value) => handleInput("description", value)}
-        />
-        {errorMsg.description && (
-          <Text style={styles.error}>{errorMsg.description}</Text>
-        )}
-      </View>
-
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Estado de Vacunación</Text>
-        <Picker
-          selectedValue={formData.isVaccinated}
-          onValueChange={(value) => handleInput("isVaccinated", value)}
-          style={styles.picker}
-        >
-          <Picker.Item label="Vacunado" value={true} />
-          <Picker.Item label="No vacunado" value={false} />
-        </Picker>
-      </View>
-
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Estado de Esterilización</Text>
-        <Picker
-          selectedValue={formData.isSterilized}
-          onValueChange={(value) => handleInput("isSterilized", value)}
-          style={styles.picker}
-        >
-          <Picker.Item label="Esterilizado" value={true} />
-          <Picker.Item label="No esterilizado" value={false} />
-        </Picker>
-      </View>
-
-      <TouchableOpacity style={styles.imagePicker} onPress={handleImagePick}>
-        <Text style={styles.imagePickerText}>Seleccionar imagen</Text>
-      </TouchableOpacity>
-      {imageUri && <Image source={{ uri: imageUri }} style={styles.image} />}
-      {errorMsg.imageUrl && (
-        <Text style={styles.error}>{errorMsg.imageUrl}</Text>
-      )}
-
-      {isUploading && <ActivityIndicator size="large" color="#0000ff" />}
-
-      <TouchableOpacity
-        style={[
-          styles.submitButton,
-          (isUploading || isLoading) && styles.disabledButton,
-        ]}
-        onPress={handleSubmit}
-        disabled={isUploading || isLoading}
-      >
-        <Text style={styles.submitButtonText}>
-          {isUploading ? "Subiendo imagen..." : "Registrar mascota"}
-        </Text>
-      </TouchableOpacity>
-      {/* <Button
-        title={isUploading ? "Subiendo imagen..." : "Registrar mascota"}
-        onPress={handleSubmit}
-        disabled={isUploading || isLoading}
-      /> */}
-    </ScrollView>
+          <Text style={styles.submitButtonText}>
+            {isUploading ? "Subiendo imagen..." : "Registrar mascota"}
+          </Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#E0F8FF",
+    backgroundColor: "#AEEFFF",
   },
   title: {
     fontSize: 28,
     fontWeight: "bold",
     marginBottom: 20,
     color: "#333",
+    textAlign: "center",
+  },
+  imageContainer: {
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  imagePicker: {
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+    backgroundColor: "#8EDCBF",
+    justifyContent: "center",
+    alignItems: "center",
+    overflow: "hidden",
+  },
+  image: {
+    width: "100%",
+    height: "100%",
+  },
+  imagePickerText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
     textAlign: "center",
   },
   inputContainer: {
@@ -289,6 +315,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 5,
     color: "#555",
+    fontWeight: "bold",
   },
   input: {
     borderWidth: 1,
@@ -308,23 +335,33 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: "#fff",
   },
-  imagePicker: {
-    backgroundColor: "#FF9AA2",
-    padding: 15,
+  datePickerButton: {
+    borderWidth: 1,
+    borderColor: "#B5EAD7",
     borderRadius: 10,
+    padding: 12,
+    backgroundColor: "#fff",
+  },
+  checkboxContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 15,
+  },
+  checkbox: {
+    flexDirection: "row",
     alignItems: "center",
-    marginBottom: 15,
-  },
-  imagePickerText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  image: {
-    width: "100%",
-    height: 200,
+    borderWidth: 1,
+    borderColor: "#8EDCBF",
     borderRadius: 10,
-    marginBottom: 15,
+    padding: 10,
+    backgroundColor: "#fff",
+  },
+  checkboxChecked: {
+    backgroundColor: "#8EDCBF",
+  },
+  checkboxLabel: {
+    marginLeft: 8,
+    fontSize: 16,
   },
   error: {
     color: "#FF9AA2",
@@ -332,7 +369,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   submitButton: {
-    backgroundColor: "#B5EAD7",
+    backgroundColor: "#8EDCBF",
     padding: 15,
     borderRadius: 10,
     alignItems: "center",

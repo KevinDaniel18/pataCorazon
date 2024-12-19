@@ -78,3 +78,7 @@ export function getPendingRequests(userId: number) {
 export function setPetToAdopted(id: number, newOwnerId: number) {
   return instance.patch(`/pets/setPetToAdopted/${id}`, { newOwnerId });
 }
+
+export function deletePetPosted(petId: number) {
+  return instance.delete(`/pets/deleteAdoptionPost/${petId}`);
+}

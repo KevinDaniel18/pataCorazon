@@ -5,7 +5,7 @@ import { AuthProvider } from "@/hooks/auth/AuthContext";
 export default function Layout() {
   return (
     <AuthProvider>
-      <StatusBar backgroundColor="#E0F8FF"/>
+      <StatusBar backgroundColor="#AEEFFF"/>
       <Stack
         screenOptions={{ headerShown: false, animation: "slide_from_right" }}
       >

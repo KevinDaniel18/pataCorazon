@@ -3,7 +3,7 @@ import React from "react";
 import TabBarButton from "./TabBarButton";
 
 const TabBar = ({ state, descriptors, navigation }: any) => {
-  const yellowColor = "#FF9AA2";
+  const pinkColor = "#FF9AA2";
   const greyColor = "#737373";
   return (
     <View style={styles.tabbar}>
@@ -50,7 +50,7 @@ const TabBar = ({ state, descriptors, navigation }: any) => {
               onLongPress={onLongPress}
               isFocused={isFocused}
               routeName={route.name}
-              color={isFocused ? yellowColor : greyColor}
+              color={isFocused ? pinkColor : greyColor}
               label={label}
             />
           );

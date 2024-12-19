@@ -1,6 +1,7 @@
 import { getPets } from "@/api/endpoint";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 import { useState, useEffect } from "react";
 import {
   Animated,
@@ -15,6 +16,7 @@ import {
 } from "react-native";
 import AdoptionForm from "./AdoptionForm";
 import * as SecureStore from "expo-secure-store";
+import PetPostsOptions from "./PetPostsOptions";
 
 interface BadgeProps {
   text: string;
@@ -53,6 +55,8 @@ export default function PetPosts() {
   const [posts, setPosts] = useState<PostData[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalPostOptions, setModalPostOptions] = useState(false);
+
   const [selectedPetId, setSelectedPetId] = useState<number | null>(null);
   const [userId, setUserId] = useState<number | undefined>(undefined);
 
@@ -72,7 +76,6 @@ export default function PetPosts() {
     setRefreshing(true);
     try {
       const res = await getPets();
-      console.log("pets obtained", JSON.stringify(res.data));
 
       setPosts(res.data);
     } catch (error) {
@@ -128,18 +131,24 @@ export default function PetPosts() {
         style={[styles.postContainer, { transform: [{ scale: scaleAnim }] }]}
       >
         <View style={styles.userDetails}>
-          <Image
-            source={
-              item.owner.profilePicture
-                ? { uri: item.owner.profilePicture }
-                : require("@/assets/images/defaultProfile.jpg")
-            }
-            style={styles.userImage}
-          />
-          <View>
-            <Text style={styles.userName}>{item.owner.name}</Text>
-            <Text style={styles.location}>{item.location}</Text>
+          <View style={{ flexDirection: "row" }}>
+            <Image
+              source={
+                item.owner.profilePicture
+                  ? { uri: item.owner.profilePicture }
+                  : require("@/assets/images/defaultProfile.jpg")
+              }
+              style={styles.userImage}
+            />
+            <View>
+              <Text style={styles.userName}>{item.owner.name}</Text>
+              <Text style={styles.location}>{item.location}</Text>
+            </View>
           </View>
+
+          <TouchableOpacity onPress={() => setModalPostOptions(true)}>
+            <SimpleLineIcons name="options-vertical" size={24} color="black" />
+          </TouchableOpacity>
         </View>
 
         <Image style={styles.imagePost} source={{ uri: item.imageUrl }} />
@@ -192,6 +201,15 @@ export default function PetPosts() {
         </View>
 
         <Text style={styles.elapsedTime}>{elapsedTime}</Text>
+
+        <PetPostsOptions
+          modalVisible={modalPostOptions}
+          setModalVisible={setModalPostOptions}
+          petImage={item.imageUrl}
+          ownerImage={item.owner.profilePicture}
+          ownerName={item.owner.name}
+          description={item.description}
+        />
       </Animated.View>
     );
   };
@@ -206,6 +224,7 @@ export default function PetPosts() {
         refreshing={refreshing}
         onRefresh={fetchPosts}
         ListFooterComponent={<View style={{ height: 200 }} />}
+        showsVerticalScrollIndicator={false}
       />
 
       <Modal
@@ -248,6 +267,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 10,
     backgroundColor: "#E8F6EF",
+    justifyContent: "space-between",
   },
   userImage: {
     height: 40,

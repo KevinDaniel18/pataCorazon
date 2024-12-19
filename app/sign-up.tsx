@@ -173,7 +173,7 @@ const RegisterScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#E0F8FF",
+    backgroundColor: "#AEEFFF",
   },
   overlay: {
     padding: 20,

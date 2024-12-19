@@ -24,6 +24,9 @@ interface Pet {
 
 interface UserData {
   name: string;
+  email: string
+  city: string;
+  country: string;
   profilePicture: string;
   pets: Pet[];
 }
@@ -53,10 +56,12 @@ export const UserProvider: React.FC<UserProvider> = ({ children }) => {
       const parseId = Number(userId);
 
       const user = await getUserById(parseId);
-      console.log("user data", user.data);
 
       setUserData({
         name: user.data.name,
+        email: user.data.email,
+        city: user.data.city,
+        country: user.data.country,
         profilePicture: user.data.profilePicture,
         pets: user.data.pets || [],
       });

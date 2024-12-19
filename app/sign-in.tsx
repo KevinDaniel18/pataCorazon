@@ -44,7 +44,7 @@ const LoginScreen = () => {
             Pata <AntDesign name="heart" size={24} color="pink" />
           </Text> */}
           <Image
-            style={{ height: 200, width: 200 }}
+            style={{ height: 100, width: 100 }}
             source={require("@/assets/images/logoPata.png")}
           />
         </View>
@@ -139,7 +139,7 @@ const LoginScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#E0F8FF",
+    backgroundColor: "#AEEFFF",
   },
   overlay: {
     padding: 20,
