@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "332357569803",
+    "project_id": "patacorazon-2bfc7",
+    "storage_bucket": "patacorazon-2bfc7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:332357569803:android:d9313c68c9021e1e94e60e",
+        "android_client_info": {
+          "package_name": "com.kevsc.pataCorazon"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCXfI_hXQN8eZI-onZIoP38oAU8XAx9Tmk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
