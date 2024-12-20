@@ -21,8 +21,7 @@ module.exports = {
         "android.permission.RECORD_AUDIO",
       ],
       package: "com.kevsc.pataCorazon",
-      googleServicesFile:
-        process.env.GOOGLE_SERVICES_JSON || "./google-services.json",
+      googleServicesFile: "./google-services.json",
     },
     web: {
       bundler: "metro",
