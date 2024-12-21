@@ -1,11 +1,19 @@
-import { Modal, StyleSheet, Text, View, Image, Dimensions } from "react-native";
-import AntDesign from "@expo/vector-icons/AntDesign";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import Feather from "@expo/vector-icons/Feather";
 import Entypo from "@expo/vector-icons/Entypo";
-import React, { useState } from "react";
-import { BlurredBackground } from "./BlurredBackground";
-
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
+import { getColors } from "react-native-image-colors";
+import {
+  BottomSheetModal,
+  BottomSheetView,
+  BottomSheetBackdrop,
+} from "@gorhom/bottom-sheet";
 
 export default function PetPostsOptions({
   modalVisible,
@@ -15,121 +23,129 @@ export default function PetPostsOptions({
   ownerName,
   description,
 }: any) {
-  const [modalHeight, setModalHeight] = useState(0);
+  const [backgroundColor, setBackgroundColor] = useState("#FFFFFF");
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+  const snapPoints = useMemo(() => ["50%"], []);
+
+  useEffect(() => {
+    const extractColor = async () => {
+      if (petImage) {
+        try {
+          const colors = await getColors(petImage, {
+            fallback: "#FFFFFF",
+            cache: true,
+            key: petImage,
+          });
+
+          if (colors.platform === "android") {
+            setBackgroundColor(colors.dominant || "#FFFFFF");
+          } else if (colors.platform === "ios") {
+            setBackgroundColor(colors.background || "#FFFFFF");
+          }
+        } catch (error) {
+          console.error("Error extracting colors:", error);
+          setBackgroundColor("#FFFFFF");
+        }
+      }
+    };
+    extractColor();
+
+    if (modalVisible) {
+      bottomSheetModalRef.current?.present();
+    } else {
+      bottomSheetModalRef.current?.dismiss();
+    }
+  }, [petImage, modalVisible]);
+
+  const renderBackdrop = useCallback(
+    (props: any) => (
+      <BottomSheetBackdrop
+        {...props}
+        disappearsOnIndex={-1}
+        appearsOnIndex={0}
+        pressBehavior="close"
+      />
+    ),
+    []
+  );
 
   return (
-    <View>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(!modalVisible);
-        }}
-      >
-        <View style={styles.overlay}>
-          <View
-            style={styles.modalContent}
-            onLayout={(event) => {
-              const { height } = event.nativeEvent.layout;
-              setModalHeight(height);
-            }}
-          >
-            <BlurredBackground
-              imageUri={petImage}
-              width={SCREEN_WIDTH}
-              height={modalHeight}
-            />
-            <View style={styles.modalHeader}>
-              <View style={styles.icon}>
-                <AntDesign
-                  name="close"
-                  size={24}
-                  color="black"
-                  onPress={() => setModalVisible(false)}
-                />
-              </View>
-              <Text style={styles.modalTitle}>Opciones</Text>
-            </View>
-            <View style={styles.postContent}>
-              <View style={{ flexDirection: "row", gap: 15 }}>
-                <Image style={styles.image} source={{ uri: petImage }} />
-                <View style={{ justifyContent: "space-evenly" }}>
-                  <View style={{ flexDirection: "row", gap: 8 }}>
-                    <Image
-                      style={styles.image2}
-                      source={
-                        ownerImage
-                          ? { uri: ownerImage }
-                          : require("@/assets/images/defaultProfile.jpg")
-                      }
-                    />
-                    <Text style={styles.text}>{ownerName}</Text>
-                  </View>
-                  <Text style={styles.text}>{description}</Text>
-                </View>
-              </View>
-            </View>
+    <BottomSheetModal
+      ref={bottomSheetModalRef}
+      index={0}
+      snapPoints={snapPoints}
+      backdropComponent={renderBackdrop}
+      onDismiss={() => setModalVisible(false)}
+    >
+      <BottomSheetView style={styles.modalContent}>
+        {/* <View style={styles.modalHeader}>
+          <Text style={styles.modalTitle}>Opciones</Text>
+        </View> */}
 
-            <View style={styles.options}>
-              <View style={styles.optionsContent}>
-                <Feather name="download" size={24} color="black" />
-                <Text style={styles.textOptions}>Guardar</Text>
+        <View style={[styles.postContent, { backgroundColor }]}>
+          <View style={{ flexDirection: "row", gap: 15 }}>
+            <Image style={styles.image} source={{ uri: petImage }} />
+            <View style={{justifyContent: "space-around"}}>
+              <View style={{ flexDirection: "row", gap: 8 }}>
+                <Image
+                  style={styles.image2}
+                  source={
+                    ownerImage
+                      ? { uri: ownerImage }
+                      : require("@/assets/images/defaultProfile.jpg")
+                  }
+                />
+                <Text style={styles.text}>{ownerName}</Text>
               </View>
-              <View style={styles.optionsContent}>
-                <Feather name="send" size={24} color="black" />
-              </View>
-              <View style={styles.optionsContent}>
-                <Entypo name="link" size={24} color="black" />
-              </View>
-              <View
-                style={[styles.optionsContent, { backgroundColor: "#F44336" }]}
-              >
-                <Feather name="trash" size={24} color="white" />
-              </View>
+              <Text style={styles.text}>{description}</Text>
             </View>
           </View>
         </View>
-      </Modal>
-    </View>
+
+        <View style={styles.options}>
+          <TouchableOpacity style={styles.optionsContent}>
+            <Feather name="download" size={24} color="black" />
+            <Text style={styles.textOptions}>Guardar</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.optionsContent}>
+            <Feather name="send" size={24} color="black" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.optionsContent}>
+            <Entypo name="link" size={24} color="black" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.optionsContent, { backgroundColor: "#F44336" }]}
+          >
+            <Feather name="trash" size={24} color="white" />
+          </TouchableOpacity>
+        </View>
+      </BottomSheetView>
+    </BottomSheetModal>
   );
 }
 
 const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "flex-end",
-  },
   modalContent: {
-    backgroundColor: "transparent",
+    backgroundColor: "white",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     overflow: "hidden",
   },
   modalHeader: {
     flexDirection: "row",
-    flexWrap: "wrap",
     alignItems: "center",
     padding: 16,
-  },
-  icon: {
-    backgroundColor: "rgba(218, 218, 218, 0.7)",
-    padding: 3,
-    borderRadius: 20,
+    justifyContent: "center",
   },
   modalTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    flex: 1,
-    textAlign: "center",
-    color: "white",
+
   },
   postContent: {
-    marginHorizontal: 20,
+    margin: 20,
     padding: 20,
     borderRadius: 20,
-    backgroundColor: "rgba(255, 255, 255, 0.3)",
   },
   image: {
     height: 80,
@@ -157,9 +173,9 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     fontSize: 12,
     fontWeight: "700",
-    color: "black",
   },
   text: {
-    color: "white",
+    fontWeight: "bold",
+    color: "#fff"
   },
 });

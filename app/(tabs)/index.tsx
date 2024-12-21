@@ -50,6 +50,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   header: {
+    marginTop:20,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",

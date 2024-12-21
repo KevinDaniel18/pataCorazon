@@ -113,6 +113,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#AEEFFF",
   },
   sectionTitle: {
+    marginTop: 40,
     fontSize: 24,
     fontWeight: "bold",
     marginVertical: 16,

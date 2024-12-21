@@ -7,7 +7,6 @@ import {
 } from "react-native";
 import React, { useEffect } from "react";
 import Avatar from "@/components/Avatar";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useUser } from "@/hooks/user/UserContex";
 import UserConfiguration from "@/components/UserConfiguration";
 
@@ -31,6 +30,7 @@ const ProfileScreen = () => {
         </View>
       </View>
       <UserConfiguration/>
+      
     </ScrollView>
   );
 };
@@ -41,6 +41,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#AEEFFF",
   },
   header: {
+    marginTop: 20,
     flexDirection: "row",
     gap: 20,
     padding: 20

@@ -24,7 +24,7 @@ export function usePetForm() {
     isVaccinated: false,
     isSterilized: false,
     description: "",
-    size: "",
+    size: "SMALL",
     imageUrl: "",
     location: "",
     ownerId: undefined,

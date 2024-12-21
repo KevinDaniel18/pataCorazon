@@ -55,7 +55,9 @@ export default function PetPosts() {
   const [posts, setPosts] = useState<PostData[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [modalPostOptions, setModalPostOptions] = useState(false);
+  const [modalPostOptions, setModalPostOptions] = useState<{
+    [key: number]: boolean;
+  }>({});
 
   const [selectedPetId, setSelectedPetId] = useState<number | null>(null);
   const [userId, setUserId] = useState<number | undefined>(undefined);
@@ -99,15 +101,29 @@ export default function PetPosts() {
     setSelectedPetId(null);
   };
 
-  const renderPost = ({ item }: { item: PostData }) => {
-    const scaleAnim = new Animated.Value(0.95);
+  function openModalOptions(id: number) {
+    setModalPostOptions((prevState) => ({
+      ...prevState,
+      [id]: true,
+    }));
+  }
 
-    Animated.spring(scaleAnim, {
-      toValue: 1,
-      friction: 5,
-      tension: 40,
-      useNativeDriver: true,
-    }).start();
+  function closeModalOptions(id: number) {
+    setModalPostOptions((prevState) => ({
+      ...prevState,
+      [id]: false,
+    }));
+  }
+
+  const renderPost = ({ item }: { item: PostData }) => {
+    // const scaleAnim = new Animated.Value(0.95);
+
+    // Animated.spring(scaleAnim, {
+    //   toValue: 1,
+    //   friction: 5,
+    //   tension: 40,
+    //   useNativeDriver: true,
+    // }).start();
 
     const calculateElapsedTime = (createdAt: string) => {
       const createdDate = new Date(createdAt);
@@ -128,7 +144,7 @@ export default function PetPosts() {
 
     return (
       <Animated.View
-        style={[styles.postContainer, { transform: [{ scale: scaleAnim }] }]}
+        style={[styles.postContainer /*{ transform: [{ scale: scaleAnim }] }*/]}
       >
         <View style={styles.userDetails}>
           <View style={{ flexDirection: "row" }}>
@@ -146,7 +162,7 @@ export default function PetPosts() {
             </View>
           </View>
 
-          <TouchableOpacity onPress={() => setModalPostOptions(true)}>
+          <TouchableOpacity onPress={() => openModalOptions(item.id)}>
             <SimpleLineIcons name="options-vertical" size={24} color="black" />
           </TouchableOpacity>
         </View>
@@ -203,8 +219,8 @@ export default function PetPosts() {
         <Text style={styles.elapsedTime}>{elapsedTime}</Text>
 
         <PetPostsOptions
-          modalVisible={modalPostOptions}
-          setModalVisible={setModalPostOptions}
+          modalVisible={modalPostOptions[item.id] || false}
+          setModalVisible={() => closeModalOptions(item.id)}
           petImage={item.imageUrl}
           ownerImage={item.owner.profilePicture}
           ownerName={item.owner.name}

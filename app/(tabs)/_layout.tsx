@@ -61,6 +61,12 @@ export default function AppLayout() {
               title: "Perfil",
             }}
           />
+          <Tabs.Screen
+            name="testing_screen"
+            options={{
+              title: "Test",
+            }}
+          />
         </Tabs>
       </UserProvider>
     </SocketProvider>

@@ -1,3 +1,5 @@
+const googleServicesJson = process.env.GOOGLE_SERVICES_JSON;
+
 module.exports = {
   expo: {
     name: "pataCorazon",
@@ -21,7 +23,7 @@ module.exports = {
         "android.permission.RECORD_AUDIO",
       ],
       package: "com.kevsc.pataCorazon",
-      googleServicesFile: "./google-services.json",
+      googleServicesFile: googleServicesJson ?? "./google-services.json",
     },
     web: {
       bundler: "metro",
