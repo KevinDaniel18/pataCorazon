@@ -1,12 +1,10 @@
-import { getPets } from "@/api/endpoint";
+import { deletePetPosted, getPets } from "@/api/endpoint";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 import { useState, useEffect } from "react";
 import {
-  Animated,
   Dimensions,
-  FlatList,
   Image,
   Modal,
   StyleSheet,
@@ -17,6 +15,9 @@ import {
 import AdoptionForm from "./AdoptionForm";
 import * as SecureStore from "expo-secure-store";
 import PetPostsOptions from "./PetPostsOptions";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Animated, { LinearTransition } from "react-native-reanimated";
+import { supabase } from "@/api/supabase";
 
 interface BadgeProps {
   text: string;
@@ -115,6 +116,28 @@ export default function PetPosts() {
     }));
   }
 
+  async function deletePost(petId: number, imageUrl: string) {
+    try {
+      const path = imageUrl.split("/").pop();
+      console.log("imagen de la mascota: ", imageUrl);
+      
+      const fullPath = `${path}`;
+      console.log("Ruta de la imagen a eliminar:", fullPath);
+      const { error } = await supabase.storage
+        .from("adoptionPosts")
+        .remove([fullPath]);
+
+      if (error) {
+        throw error;
+      }
+
+      await deletePetPosted(petId);
+      setPosts((prev) => prev.filter((p) => p.id !== petId));
+    } catch (error) {
+      console.error("Error al eliminar el post:", error);
+    }
+  }
+
   const renderPost = ({ item }: { item: PostData }) => {
     // const scaleAnim = new Animated.Value(0.95);
 
@@ -143,7 +166,7 @@ export default function PetPosts() {
     const elapsedTime = calculateElapsedTime(item.createdAt);
 
     return (
-      <Animated.View
+      <View
         style={[styles.postContainer /*{ transform: [{ scale: scaleAnim }] }*/]}
       >
         <View style={styles.userDetails}>
@@ -225,22 +248,29 @@ export default function PetPosts() {
           ownerImage={item.owner.profilePicture}
           ownerName={item.owner.name}
           description={item.description}
+          petId={item.id}
+          deletePost={deletePost}
+          userId={userId}
+          ownerId={item.owner.id}
+          imageUrl={item.imageUrl}
         />
-      </Animated.View>
+      </View>
     );
   };
 
   return (
-    <View>
-      <FlatList
+    <View style={{ flex: 1 }}>
+      <Animated.FlatList
         data={posts}
         renderItem={renderPost}
         keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={styles.container}
+        contentContainerStyle={[styles.container]}
         refreshing={refreshing}
         onRefresh={fetchPosts}
-        ListFooterComponent={<View style={{ height: 200 }} />}
+        ListFooterComponent={<View style={{ height: 100 }} />}
         showsVerticalScrollIndicator={false}
+        scrollEventThrottle={16}
+        itemLayoutAnimation={LinearTransition}
       />
 
       <Modal
@@ -262,7 +292,7 @@ export default function PetPosts() {
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 10,
-    paddingTop: 10,
+    marginTop: 10,
   },
   postContainer: {
     backgroundColor: "#F9F9F9",

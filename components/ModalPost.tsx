@@ -10,7 +10,7 @@ const ModalPost = ({ modalVisible, setModalVisible }: any) => {
   return (
     <View>
       <Modal
-        animationType="slide"
+        animationType="fade"
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => {
@@ -49,17 +49,15 @@ const ModalPost = ({ modalVisible, setModalVisible }: any) => {
       </Modal>
 
       <Modal
-        animationType="slide"
+        animationType="fade"
         transparent={true}
         visible={uploadMediaVisible}
         onRequestClose={() => {
           setUploadMediaVisible(!uploadMediaVisible);
         }}
       >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <PetForm />
-          </View>
+        <View style={styles.modalView}>
+          <PetForm setUploadMediaVisible={setUploadMediaVisible} uploadMediaVisible={uploadMediaVisible} />
         </View>
       </Modal>
     </View>
@@ -78,7 +76,8 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: "#AEEFFF",
+    //backgroundColor: "#AEEFFF",
+    backgroundColor: "white",
     borderRadius: 0,
     padding: 35,
     alignItems: "center",

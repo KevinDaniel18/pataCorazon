@@ -1,6 +1,5 @@
 import { registerPet } from "@/api/endpoint";
 import { useState } from "react";
-import * as SecureStore from "expo-secure-store";
 
 interface FormDataProps {
   name: string;

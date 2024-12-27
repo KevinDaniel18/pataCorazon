@@ -19,7 +19,7 @@ export function useLoginForm() {
   });
   const [errorMsg, setErrorMsg] = useState<ErrorProps>({});
   const [showPassword, setShowPassword] = useState(false);
-  const { onLogin, onLoginSupabase, isLoading } = useAuth();
+  const { onLogin, onLoginSupabase, isLoading, setIsLoading } = useAuth();
 
   const router = useRouter();
 
@@ -57,25 +57,32 @@ export function useLoginForm() {
   }
 
   async function login() {
-    if (validateInputs()) {
-      const res = await onLogin!(formData.email, formData.password);
+    setIsLoading!(true);
+    try {
+      if (validateInputs()) {
+        const res = await onLogin!(formData.email, formData.password);
 
-      if (res && res.error) {
-        showToast(res.msg);
-        return;
+        if (res && res.error) {
+          showToast(res.msg);
+          return;
+        }
+
+        const resSupabase = await onLoginSupabase!(
+          formData.email,
+          formData.password
+        );
+
+        if (resSupabase && resSupabase.error) {
+          showToast(resSupabase.msg);
+          return;
+        }
+
+        router.replace("/");
       }
-
-      const resSupabase = await onLoginSupabase!(
-        formData.email,
-        formData.password
-      );
-
-      if (resSupabase && resSupabase.error) {
-        showToast(resSupabase.msg);
-        return;
-      }
-
-      router.navigate("/");
+    } catch (error) {
+      showToast("Ocurrió un error inesperado");
+    } finally {
+      setIsLoading!(false);
     }
   }
 

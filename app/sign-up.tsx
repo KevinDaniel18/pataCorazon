@@ -8,6 +8,7 @@ import {
   Platform,
   ActivityIndicator,
   Image,
+  ScrollView,
 } from "react-native";
 import React from "react";
 import { useRouter } from "expo-router";
@@ -30,14 +31,11 @@ const RegisterScreen = () => {
   const router = useRouter();
 
   const navigateToSignIn = () => {
-    router.navigate("/sign-in");
+    router.back();
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.container}
-    >
+    <ScrollView style={styles.container}>
       <View style={styles.overlay}>
         <View style={styles.logoContainer}>
           <Text style={styles.logoText}>
@@ -166,14 +164,14 @@ const RegisterScreen = () => {
           </Text>
         </View>
       </View>
-    </KeyboardAvoidingView>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#AEEFFF",
+    //backgroundColor: "#AEEFFF",
   },
   overlay: {
     padding: 20,
@@ -182,7 +180,6 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     alignItems: "center",
-    marginTop: 20,
     marginBottom: 40,
   },
   logoText: {
@@ -221,7 +218,8 @@ const styles = StyleSheet.create({
     right: 15,
   },
   button: {
-    backgroundColor: "#FF9AA2", // Soft pink button
+    //backgroundColor: "#FF9AA2", // Soft pink button
+    backgroundColor: "#8EDCBF", // Soft pink button
     padding: 15,
     borderRadius: 8,
     alignItems: "center",

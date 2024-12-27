@@ -43,6 +43,7 @@ const TabBarButton = (props: any) => {
         {icons[routeName as RouteName]({ color })}
       </Animated.View>
 
+
       <Animated.Text style={[{ color, fontSize: 11 }, animatedTextStyle]}>
         {label}
       </Animated.Text>

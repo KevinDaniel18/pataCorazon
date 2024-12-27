@@ -12,7 +12,6 @@ import UserConfiguration from "@/components/UserConfiguration";
 
 const ProfileScreen = () => {
   const { userData } = useUser();
-
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
@@ -22,11 +21,11 @@ const ProfileScreen = () => {
           <Text style={{color: "gray"}}>
             {userData?.city} - {userData?.country}
           </Text>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={{ padding: 10, backgroundColor: "#fff", borderRadius: 10 }}
           >
             <Text>Cambiar foto de perfil</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </View>
       <UserConfiguration/>
@@ -38,7 +37,8 @@ const ProfileScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#AEEFFF",
+    //backgroundColor: "#AEEFFF",
+    backgroundColor: "white",
   },
   header: {
     marginTop: 20,

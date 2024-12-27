@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { usePushNotifications } from "@/notifications/setupNotifications";
 import { updateNotificationToken } from "@/api/endpoint";
 import { SocketProvider } from "@/hooks/socket/SocketContext";
+import * as SecureStore from "expo-secure-store";
 
 export default function AppLayout() {
   const { isLoading, authState } = useAuth();
@@ -14,13 +15,19 @@ export default function AppLayout() {
 
   useEffect(() => {
     async function expoPush() {
-      if (expoPushToken) {
+      const storedState = await SecureStore.getItemAsync(
+        "notificationsEnabled"
+      );
+
+      if (expoPushToken && storedState === "true") {
         try {
           await updateNotificationToken({ expoPushToken });
           console.log("expo push token enviado:", expoPushToken);
         } catch (error) {
           console.error("Error al enviar el token:", error);
         }
+      } else {
+        console.log("Notificaciones desactivadas. No se envía el token.");
       }
     }
     expoPush();

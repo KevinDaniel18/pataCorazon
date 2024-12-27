@@ -4,15 +4,12 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
-  KeyboardAvoidingView,
-  Platform,
   ActivityIndicator,
   Image,
 } from "react-native";
 import React from "react";
 import { useRouter } from "expo-router";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import AntDesign from "@expo/vector-icons/AntDesign";
 import { useLoginForm } from "@/hooks/form/useLoginForm";
 
 const LoginScreen = () => {
@@ -34,8 +31,7 @@ const LoginScreen = () => {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    <View
       style={styles.container}
     >
       <View style={styles.overlay}>
@@ -132,14 +128,14 @@ const LoginScreen = () => {
           </Text>
         </View>
       </View>
-    </KeyboardAvoidingView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#AEEFFF",
+    //backgroundColor: "#AEEFFF",
   },
   overlay: {
     padding: 20,
@@ -187,7 +183,8 @@ const styles = StyleSheet.create({
     right: 15,
   },
   button: {
-    backgroundColor: "#FF9AA2", // Soft pink button
+    //backgroundColor: "#FF9AA2", // Soft pink button
+    backgroundColor: "#8EDCBF",
     padding: 15,
     borderRadius: 8,
     alignItems: "center",

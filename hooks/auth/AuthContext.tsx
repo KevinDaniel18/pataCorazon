@@ -7,6 +7,7 @@ import { login, register } from "@/api/endpoint";
 interface AuthProps {
   authState?: { token: string | null; authenticated?: boolean | null };
   isLoading: boolean;
+  setIsLoading?: (loading: boolean) => void;
   onRegister?: (
     email: string,
     name: string,
@@ -106,7 +107,6 @@ export const AuthProvider = ({ children }: any) => {
   }
 
   async function handleLogin(email: string, password: string) {
-    setIsLoading(true);
     try {
       const res = await login({ email, password });
       if (!res || !res.data) {
@@ -135,8 +135,6 @@ export const AuthProvider = ({ children }: any) => {
         console.log(error);
         return { error: true, msg: "Ocurrió un error desconocido" };
       }
-    } finally {
-      setIsLoading(false);
     }
   }
 
@@ -185,6 +183,7 @@ export const AuthProvider = ({ children }: any) => {
     onLogout: handleLogout,
     authState,
     isLoading,
+    setIsLoading
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

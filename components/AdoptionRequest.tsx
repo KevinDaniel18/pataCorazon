@@ -1,8 +1,9 @@
 import { getPendingRequests, setPetToAdopted } from "@/api/endpoint";
 import { useSocket } from "@/hooks/socket/SocketContext";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import * as SecureStore from "expo-secure-store";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { useFocusEffect } from "expo-router";
 
 interface AdoptionRequest {
   id: number;
@@ -27,22 +28,33 @@ export default function AdoptionRequest() {
   const [adoptionRequest, setAdoptionRequest] = useState<any>(null);
   const socket = useSocket();
 
+  const fetchPendingRequests = async () => {
+    try {
+      const userId = await SecureStore.getItemAsync("USER_ID");
+      const response = await getPendingRequests(Number(userId));
+      setAdoptionRequests(response.data);
+    } catch (error) {
+      console.error("Error al obtener solicitudes de adopción:", error);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchPendingRequests();
+      console.log("hello, im focused");
+    }, [])
+  );
+
   useEffect(() => {
-    const fetchPendingRequests = async () => {
-      try {
-        const userId = await SecureStore.getItemAsync("USER_ID");
-        const response = await getPendingRequests(Number(userId));
-        setAdoptionRequests(response.data);
-      } catch (error) {
-        console.error("Error al obtener solicitudes de adopción:", error);
-      }
-    };
-
-    fetchPendingRequests();
-
     if (socket) {
       socket.on("newAdoptionRequest", (data) => {
         setAdoptionRequest(data);
+        setAdoptionRequests((prevRequests) => {
+          if (!prevRequests.some((request) => request.id === data.id)) {
+            return [...prevRequests, data];
+          }
+          return prevRequests;
+        });
       });
 
       return () => {
@@ -183,6 +195,7 @@ const styles = StyleSheet.create({
     color: "#555",
     textAlign: "center",
     marginTop: 20,
+    marginBottom: 100,
   },
   requestContainer: {
     backgroundColor: "#fff",
@@ -241,7 +254,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   requestsList: {
-    marginTop: 24,
     marginBottom: 80,
   },
 });

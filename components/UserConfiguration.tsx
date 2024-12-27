@@ -8,62 +8,59 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import HorizontalLine from "./HorizontalLine";
 import { useUser } from "@/hooks/user/UserContex";
 import { useAuth } from "@/hooks/auth/AuthContext";
+import { useRouter } from "expo-router";
 
 export default function UserConfiguration() {
   const { userData } = useUser();
   const { onLogout } = useAuth();
+  const route = useRouter();
+  const options = ["Nombre", "Correo", "Ubicación", "Cambiar contraseña"];
+  function navigateToUpdateUser(title: string) {
+    route.push({ pathname: "/user/update-user", params: { title } });
+  }
   return (
     <View style={styles.container}>
       <Text style={styles.information}>Información</Text>
 
       <HorizontalLine />
 
-      <TouchableOpacity style={styles.userInfo}>
-        <View style={styles.userProperty}>
-          <View style={styles.icon}>
-            <AntDesign name="user" size={24} color="gray" />
+      {options.map((option, index) => (
+        <TouchableOpacity
+          key={index}
+          style={styles.userInfo}
+          onPress={() => navigateToUpdateUser(option)}
+        >
+          <View style={styles.userProperty}>
+            <View style={styles.icon}>
+              {index === 0 && <AntDesign name="user" size={24} color="gray" />}
+              {index === 1 && <Fontisto name="email" size={24} color="gray" />}
+              {index === 2 && (
+                <Ionicons name="location-outline" size={24} color="gray" />
+              )}
+              {index === 3 && (
+                <MaterialIcons name="security" size={24} color="gray" />
+              )}
+            </View>
+            <Text>{option}</Text>
           </View>
-          <Text>Name</Text>
-        </View>
-        <Entypo name="chevron-thin-right" size={24} color="gray" />
-      </TouchableOpacity>
 
-      <TouchableOpacity style={styles.userInfo}>
-        <View style={styles.userProperty}>
-          <View style={styles.icon}>
-            <Fontisto name="email" size={24} color="gray" />
-          </View>
-          <Text>Correo</Text>
-        </View>
-        <View style={{ flexDirection: "row" }}>
-          <Text style={{ color: "gray" }}>{userData?.email}</Text>
-          <Entypo name="chevron-thin-right" size={24} color="gray" />
-        </View>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.userInfo}>
-        <View style={styles.userProperty}>
-          <View style={styles.icon}>
-            <Ionicons name="location-outline" size={24} color="gray" />
-          </View>
-          <Text>Ubicación</Text>
-        </View>
-        <Entypo name="chevron-thin-right" size={24} color="gray" />
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.userInfo}>
-        <View style={styles.userProperty}>
-          <View style={styles.icon}>
-            <MaterialIcons name="security" size={24} color="gray" />
-          </View>
-          <Text>Cambiar contraseña</Text>
-        </View>
-        <Entypo name="chevron-thin-right" size={24} color="gray" />
-      </TouchableOpacity>
+          {index === 1 ? (
+            <View style={{ flexDirection: "row" }}>
+              <Text style={{ color: "gray" }}>{userData?.email}</Text>
+              <Entypo name="chevron-thin-right" size={24} color="gray" />
+            </View>
+          ) : (
+            <Entypo name="chevron-thin-right" size={24} color="gray" />
+          )}
+        </TouchableOpacity>
+      ))}
 
       <HorizontalLine />
 
-      <TouchableOpacity style={styles.userInfo}>
+      <TouchableOpacity
+        style={styles.userInfo}
+        onPress={() => route.push("/notifications/allow-notifications")}
+      >
         <View style={styles.userProperty}>
           <View style={styles.icon2}>
             <Ionicons name="notifications-outline" size={24} color="white" />
@@ -88,6 +85,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     padding: 20,
     borderRadius: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2.5,
+    elevation: 3,
+    marginBottom: 110,
   },
   information: {
     fontWeight: "bold",

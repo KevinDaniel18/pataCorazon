@@ -43,6 +43,20 @@ export function getUserById(id: number) {
   return instance.get(`/user/${id}`);
 }
 
+export function updateUser(userData: {
+  name?: string | undefined;
+  email?: string | undefined;
+  city?: string | undefined;
+  country?: string | undefined;
+  password?: string | undefined;
+}) {
+  return instance.patch("/user/updateUser", userData);
+}
+
+export function removeProfilePicture() {
+  return instance.patch("/user/remove-profile-picture");
+}
+
 export function registerPet(petData: {
   name: string;
   breed: string;
@@ -69,6 +83,10 @@ export function updateNotificationToken(notificationData: {
     "/notifications/updateNotificationToken",
     notificationData
   );
+}
+
+export function disableNotifications() {
+  return instance.patch("/notifications/disableNotifications");
 }
 
 export function getPendingRequests(userId: number) {

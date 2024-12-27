@@ -17,8 +17,9 @@ import { usePetForm } from "@/hooks/form/usePetForm";
 import * as ImagePicker from "expo-image-picker";
 import { Picker } from "@react-native-picker/picker";
 import { supabase } from "@/api/supabase";
+import AntDesign from "@expo/vector-icons/AntDesign";
 
-export function PetForm() {
+export function PetForm({ uploadMediaVisible, setUploadMediaVisible }: any) {
   const { formData, errorMsg, handleInput, register, isLoading } = usePetForm();
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [isUploading, setUploading] = useState(false);
@@ -143,7 +144,12 @@ export function PetForm() {
       style={styles.container}
     >
       <ScrollView showsVerticalScrollIndicator={false}>
-        <Text style={styles.title}>Registro de Mascota</Text>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 20 }}>
+          <TouchableOpacity onPress={()=>setUploadMediaVisible(!uploadMediaVisible)}>
+            <AntDesign name="arrowleft" size={24} color="black" />
+          </TouchableOpacity>
+          <Text style={styles.title}>Registro de Mascota</Text>
+        </View>
 
         <View style={styles.imageContainer}>
           <TouchableOpacity
@@ -276,14 +282,12 @@ export function PetForm() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#AEEFFF",
+    //backgroundColor: "#AEEFFF",
   },
   title: {
     fontSize: 28,
     fontWeight: "bold",
-    marginBottom: 20,
     color: "#333",
-    textAlign: "center",
   },
   imageContainer: {
     alignItems: "center",

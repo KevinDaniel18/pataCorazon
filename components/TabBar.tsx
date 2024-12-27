@@ -3,7 +3,7 @@ import React from "react";
 import TabBarButton from "./TabBarButton";
 
 const TabBar = ({ state, descriptors, navigation }: any) => {
-  const pinkColor = "#FF9AA2";
+  const pinkColor = "#fff";
   const greyColor = "#737373";
   return (
     <View style={styles.tabbar}>
@@ -67,7 +67,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "white",
+    //backgroundColor: "white",
+    backgroundColor: "#8EDCBF",
     marginHorizontal: 20,
     paddingVertical: 15,
     borderRadius: 25,

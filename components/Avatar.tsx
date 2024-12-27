@@ -10,8 +10,9 @@ import {
 import React, { useEffect, useState } from "react";
 import * as ImagePicker from "expo-image-picker";
 import { supabase } from "@/api/supabase";
-import { updateProfilePicture } from "@/api/endpoint";
+import { removeProfilePicture, updateProfilePicture } from "@/api/endpoint";
 import * as SecureStore from "expo-secure-store";
+import UserImageOption from "./UserImageOption";
 
 interface Props {
   size: number;
@@ -22,6 +23,7 @@ const Avatar = ({ url, size = 150 }: Props) => {
   const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
   const avatarSize = { height: size, width: size };
 
   useEffect(() => {
@@ -65,6 +67,7 @@ const Avatar = ({ url, size = 150 }: Props) => {
 
   async function uploadAvatar() {
     try {
+      setModalVisible(false)
       const { data: session } = await supabase.auth.getSession();
       if (!session) {
         throw new Error("Debes estar autenticado para subir una imagen");
@@ -129,9 +132,52 @@ const Avatar = ({ url, size = 150 }: Props) => {
     }
   }
 
+  async function deleteAvatar() {
+    try {
+      setModalVisible(false)
+      const { data: session } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error("Debes estar autenticado para eliminar la imagen");
+      }
+
+      if (!avatarUrl) {
+        Alert.alert("No hay ninguna foto para eliminar.");
+        return;
+      }
+
+      const path = avatarUrl.split("/").pop();
+      const fullPath = `${path}`;
+
+      console.log(avatarUrl);
+      
+
+      console.log("Ruta de la imagen a eliminar:", fullPath);
+
+      const { error } = await supabase.storage
+        .from("avatars")
+        .remove([fullPath]);
+
+      if (error) {
+        throw error;
+      }
+
+      await removeProfilePicture();
+      setAvatarUrl(null);
+
+      Alert.alert("Foto de perfil eliminada con éxito.");
+    } catch (error) {
+      if (error instanceof Error) {
+        Alert.alert("Error al eliminar la imagen:", error.message);
+      }
+    }
+  }
+
   return (
     <View>
-      <TouchableOpacity onPress={uploadAvatar} disabled={uploading}>
+      <TouchableOpacity
+        onPress={() => setModalVisible(true)}
+        disabled={uploading}
+      >
         <View style={[avatarSize, styles.avatar]}>
           {loading ? (
             <View style={styles.loadingContainer}>
@@ -154,6 +200,14 @@ const Avatar = ({ url, size = 150 }: Props) => {
       <View>
         <Text>{uploading ? "Subiendo..." : null}</Text>
       </View>
+
+      <UserImageOption
+        modalVisible={modalVisible || false}
+        setModalVisible={() => setModalVisible(false)}
+        uploadAvatar={uploadAvatar}
+        deleteAvatar={deleteAvatar}
+        avatarUrl={avatarUrl}
+      />
     </View>
   );
 };
