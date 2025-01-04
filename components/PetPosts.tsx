@@ -2,9 +2,10 @@ import { deletePetPosted, getPets } from "@/api/endpoint";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Dimensions,
+  FlatList,
   Image,
   Modal,
   StyleSheet,
@@ -15,9 +16,9 @@ import {
 import AdoptionForm from "./AdoptionForm";
 import * as SecureStore from "expo-secure-store";
 import PetPostsOptions from "./PetPostsOptions";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, { LinearTransition } from "react-native-reanimated";
 import { supabase } from "@/api/supabase";
+import Comments from "./Comments";
 
 interface BadgeProps {
   text: string;
@@ -57,6 +58,9 @@ export default function PetPosts() {
   const [refreshing, setRefreshing] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalPostOptions, setModalPostOptions] = useState<{
+    [key: number]: boolean;
+  }>({});
+  const [modalComment, setModalComment] = useState<{
     [key: number]: boolean;
   }>({});
 
@@ -116,11 +120,25 @@ export default function PetPosts() {
     }));
   }
 
+  function openModalComment(id: number) {
+    setModalComment((prevState) => ({
+      ...prevState,
+      [id]: true,
+    }));
+  }
+
+  function closeModalComment(id: number) {
+    setModalComment((prevState) => ({
+      ...prevState,
+      [id]: false,
+    }));
+  }
+
   async function deletePost(petId: number, imageUrl: string) {
     try {
       const path = imageUrl.split("/").pop();
       console.log("imagen de la mascota: ", imageUrl);
-      
+
       const fullPath = `${path}`;
       console.log("Ruta de la imagen a eliminar:", fullPath);
       const { error } = await supabase.storage
@@ -229,7 +247,7 @@ export default function PetPosts() {
           <TouchableOpacity>
             <Ionicons name="heart-outline" size={24} color="#fff" />
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => openModalComment(item.id)}>
             <Ionicons name="chatbubble-outline" size={24} color="#fff" />
           </TouchableOpacity>
           {userId !== item.owner.id && (
@@ -254,6 +272,12 @@ export default function PetPosts() {
           ownerId={item.owner.id}
           imageUrl={item.imageUrl}
         />
+
+        <Comments
+          modalVisible={modalComment[item.id] || false}
+          setModalVisible={() => closeModalComment(item.id)}
+          petId={item.id}
+        />
       </View>
     );
   };
@@ -264,9 +288,10 @@ export default function PetPosts() {
         data={posts}
         renderItem={renderPost}
         keyExtractor={(item) => item.id.toString()}
+        initialNumToRender={10}
         contentContainerStyle={[styles.container]}
         refreshing={refreshing}
-        onRefresh={fetchPosts}
+        onRefresh={() => fetchPosts()}
         ListFooterComponent={<View style={{ height: 100 }} />}
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={16}

@@ -19,7 +19,7 @@ export default function UserConfiguration() {
     route.push({ pathname: "/user/update-user", params: { title } });
   }
   return (
-    <View style={styles.container}>
+    <View style={[styles.container]}>
       <Text style={styles.information}>Información</Text>
 
       <HorizontalLine />

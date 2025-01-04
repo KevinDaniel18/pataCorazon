@@ -1,56 +1,52 @@
-import React, { useCallback, useMemo, useRef } from "react";
-import { View, Text, StyleSheet, Button } from "react-native";
-import {
-  BottomSheetModal,
-  BottomSheetView,
-  BottomSheetBackdrop,
-} from "@gorhom/bottom-sheet";
+import React, { useState } from "react";
+import { StyleSheet, Text, Pressable, View, Modal } from "react-native";
+import UserProfile from "../user/user-profile";
 
 const TestingScreen = () => {
-  // ref
-  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-  const snapPoints = useMemo(() => ["25%", "50%", "75%"], []);
-  const renderBackdrop = useCallback(
-    (props: any) => (
-      <BottomSheetBackdrop
-        {...props}
-        appearsOnIndex={0}
-        disappearsOnIndex={-1}
-      />
-    ),
-    []
-  );
+  const [showModal, setShowModal] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
 
-  // callbacks
-  const handlePresentModalPress = useCallback(() => {
-    bottomSheetModalRef.current?.present();
-  }, []);
-  const handleSheetChanges = useCallback((index: number) => {
-    return index;
-  }, []);
+  const toggleModal = () => {
+    setShowModal(!showModal);
+    setShowProfile(false);
+  };
 
-  // renders
+  const toggleProfile = () => {
+    setShowProfile(!showProfile);
+  };
+
   return (
     <View style={styles.container}>
-      
-        <Button
-          onPress={handlePresentModalPress}
-          title="Present Modal"
-          color="black"
-        />
-        <BottomSheetModal
-          index={1}
-          snapPoints={snapPoints}
-          backdropComponent={renderBackdrop}
-          ref={bottomSheetModalRef}
-          onChange={handleSheetChanges}
-          
-        >
-          <BottomSheetView style={styles.contentContainer}>
-            <Text>aqui va el contenido</Text>
-          </BottomSheetView>
-        </BottomSheetModal>
+      <Pressable style={styles.button} onPress={toggleModal}>
+        <Text style={styles.buttonText}>Open Modal</Text>
+      </Pressable>
 
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={showModal}
+        onRequestClose={toggleModal}
+        statusBarTranslucent
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalText}>this is a modal</Text>
+            <Pressable style={styles.button} onPress={toggleProfile}>
+              <Text style={styles.buttonText}>
+                {showProfile ? "Hide Profile" : "Show Profile"}
+              </Text>
+            </Pressable>
+
+            <Pressable
+              style={[styles.button, styles.closeButton]}
+              onPress={toggleModal}
+            >
+              <Text style={styles.buttonText}>Close Modal</Text>
+            </Pressable>
+          </View>
+        </View>
+        <UserProfile showProfile={showProfile} toggleProfile={toggleProfile} />
+      </Modal>
     </View>
   );
 };
@@ -58,12 +54,40 @@ const TestingScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 24,
     justifyContent: "center",
-  },
-  contentContainer: {
-    flex: 1,
     alignItems: "center",
+  },
+  button: {
+    backgroundColor: "#6200ee",
+    padding: 12,
+    borderRadius: 8,
+    marginTop: 10,
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    width: 300,
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  modalText: {
+    fontSize: 18,
+    marginBottom: 15,
+  },
+  closeButton: {
+    marginTop: 20,
+    backgroundColor: "#b00020",
   },
 });
 

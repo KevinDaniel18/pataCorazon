@@ -27,6 +27,10 @@ export default function Layout() {
                 name="notifications/allow-notifications"
                 options={{ title: "Notificaciones" }}
               />
+              <Stack.Screen
+                name="user/user-profile"
+                options={{headerShown: false}}
+              />
             </Stack>
           </BottomSheetModalProvider>
         </AuthProvider>

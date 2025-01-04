@@ -100,3 +100,26 @@ export function setPetToAdopted(id: number, newOwnerId: number) {
 export function deletePetPosted(petId: number) {
   return instance.delete(`/pets/deleteAdoptionPost/${petId}`);
 }
+
+export function addPetComment(data: {
+  content: string;
+  petId: number | undefined;
+}) {
+  return instance.post("/comments/create", data);
+}
+
+export function getCommentsByPet(petId: number) {
+  return instance.get(`/comments/${petId}`);
+}
+
+export function likeComment(id: number) {
+  return instance.post(`/comments/${id}/like`);
+}
+export function unlikeComment(id: number) {
+  return instance.post(`/comments/${id}/unlike`);
+}
+
+export async function hasUserLiked(id: number) {
+  const res = await  instance.get(`/comments/${id}/liked`);
+  return res.data
+}
