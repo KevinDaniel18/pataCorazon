@@ -5,9 +5,9 @@ import Entypo from "@expo/vector-icons/Entypo";
 import Fontisto from "@expo/vector-icons/Fontisto";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import HorizontalLine from "./HorizontalLine";
-import { useUser } from "@/hooks/user/UserContex";
-import { useAuth } from "@/hooks/auth/AuthContext";
+import HorizontalLine from "../HorizontalLine";
+import { useUser } from "../../hooks/user/UserContex";
+import { useAuth } from "../../hooks/auth/AuthContext";
 import { useRouter } from "expo-router";
 
 export default function UserConfiguration() {

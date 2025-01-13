@@ -22,7 +22,7 @@ export default function UserImageOption({
   avatarUrl,
 }: any) {
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-  const snapPoints = useMemo(() => ["50%"], []);
+  const snapPoints = useMemo(() => ["20%"], []);
 
   useEffect(() => {
     if (modalVisible) {

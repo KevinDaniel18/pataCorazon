@@ -1,6 +1,7 @@
 export interface Pets{
   id: number
   name: string
+  imageUrl: string
 }
 
 export interface User {

@@ -25,6 +25,7 @@
     "@shopify/react-native-skia": "1.5.0",
     "@supabase/supabase-js": "^2.47.6",
     "axios": "^1.7.9",
+    "date-fns": "^4.1.0",
     "expo": "~52.0.20",
     "expo-blur": "~14.0.1",
     "expo-constants": "~17.0.3",

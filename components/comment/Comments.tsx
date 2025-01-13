@@ -21,8 +21,9 @@ import {
 import { Comment, CommentsProps, Pets } from "@/types/comments";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import UserProfile from "@/app/user/user-profile";
+import UserProfile from "../user/UserProfile";
 import { useRouter } from "expo-router";
+import ProfileModal from "../ProfileModal";
 
 export default function Comments({
   modalVisible,
@@ -47,7 +48,14 @@ export default function Comments({
     pet: Pets[]
   ) {
     setShowProfile(true);
-    route.setParams({ userName, userImage, userId, city, country, pet: JSON.stringify(pet) });
+    route.setParams({
+      userName,
+      userImage,
+      userId,
+      city,
+      country,
+      pet: JSON.stringify(pet),
+    });
   }
 
   const toggleProfile = () => {
@@ -59,7 +67,7 @@ export default function Comments({
     try {
       const res = await getCommentsByPet(petId);
       console.log(JSON.stringify(res.data));
-      
+
       setData(res.data.reverse());
       setCommentCount(res.data.length);
 
@@ -88,25 +96,22 @@ export default function Comments({
         },
         onPanResponderRelease: (_, gestureState) => {
           if (gestureState.dy > 20) {
-            Animated.parallel([
-              Animated.spring(translateY, {
-                toValue: 700,
-                useNativeDriver: true,
-                tension: 65,
-                friction: 11,
-              }),
-              Animated.timing(backdropOpacity, {
-                toValue: 0,
-                duration: 200,
-                useNativeDriver: true,
-              }),
-            ]).start(() => setModalVisible(false));
+            Animated.timing(translateY, {
+              toValue: 700,
+              useNativeDriver: true,
+              duration: 300,
+            }).start();
+
+            Animated.timing(backdropOpacity, {
+              toValue: 0,
+              duration: 300,
+              useNativeDriver: true,
+            }).start(() => setModalVisible(false));
           } else {
-            Animated.spring(translateY, {
+            Animated.timing(translateY, {
               toValue: 0,
               useNativeDriver: true,
-              tension: 30,
-              friction: 7,
+              duration: 300,
             }).start();
           }
         },
@@ -116,35 +121,31 @@ export default function Comments({
 
   useEffect(() => {
     if (modalVisible) {
-      Animated.parallel([
-        Animated.spring(translateY, {
-          toValue: 0,
-          useNativeDriver: true,
-          tension: 40,
-          friction: 7,
-        }),
-        Animated.timing(backdropOpacity, {
-          toValue: 1,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-      ]).start();
+      Animated.timing(translateY, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+
+      Animated.timing(backdropOpacity, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
 
       fetchComments();
     } else {
-      Animated.parallel([
-        Animated.spring(translateY, {
-          toValue: 500,
-          useNativeDriver: true,
-          tension: 40,
-          friction: 7,
-        }),
-        Animated.timing(backdropOpacity, {
-          toValue: 0,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-      ]).start();
+      Animated.timing(translateY, {
+        toValue: 500,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+
+      Animated.timing(backdropOpacity, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
     }
   }, [modalVisible, translateY, backdropOpacity]);
 
@@ -184,6 +185,15 @@ export default function Comments({
       setLikedComments((prev) => [...prev, id]);
     }
   };
+
+  function formatLikes(likes: number) {
+    if (likes >= 1_000_000) {
+      return (likes / 1_000_000).toFixed(1).replace(/\.0$/, "") + "M";
+    } else if (likes >= 1_000) {
+      return (likes / 1_000).toFixed(1).replace(/\.0$/, "") + "k";
+    }
+    return likes.toString();
+  }
 
   const renderItem = useCallback(
     ({ item }: { item: Comment }) => {
@@ -232,7 +242,7 @@ export default function Comments({
                   color="black"
                 />
               </TouchableOpacity>
-              <Text>{item.likes >= 1 ? item.likes : null}</Text>
+              <Text>{item.likes >= 1 ? formatLikes(item.likes) : null}</Text>
             </View>
           </View>
           <Text style={styles.commentContent}>{item.content}</Text>
@@ -294,7 +304,7 @@ export default function Comments({
           <CommentsPostForm petId={petId} onCommentPosted={handleNewComment} />
         </Animated.View>
       </Animated.View>
-      <UserProfile showProfile={showProfile} toggleProfile={toggleProfile} />
+      <ProfileModal showProfile={showProfile} toggleProfile={toggleProfile} />
     </Modal>
   );
 }

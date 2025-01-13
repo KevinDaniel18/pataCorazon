@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   Modal,
-  Pressable,
   Animated,
   Image,
   TouchableOpacity,
@@ -18,6 +17,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as SecureStore from "expo-secure-store";
 import { ProfileModalProps } from "@/types/profileModalTypes";
 import { Pets } from "@/types/comments";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import AccordionItem from "./AccordionItem";
+import ModalChat from "./chat/ModalChat";
 
 const DEFAULT_PROFILE_IMAGE = require("@/assets/images/defaultProfile.jpg");
 
@@ -25,8 +27,9 @@ export default function ProfileModal({
   showProfile,
   toggleProfile,
 }: ProfileModalProps) {
-  const slideAnim = useRef(new Animated.Value(400)).current;
   const [modalVisible, setModalVisible] = useState(showProfile);
+  const [showChat, setShowChat] = useState(false);
+  const slideAnim = useRef(new Animated.Value(-500)).current;
   const { userName, userImage, userId, city, country, pet } =
     useLocalSearchParams();
   const [storedUserId, setStoredUserId] = useState<number | undefined>(
@@ -50,23 +53,35 @@ export default function ProfileModal({
   useEffect(() => {
     if (showProfile) {
       setModalVisible(true);
-      Animated.spring(slideAnim, {
+      Animated.timing(slideAnim, {
         toValue: 0,
+        duration: 300,
         useNativeDriver: true,
-        tension: 65,
-        friction: 11,
       }).start();
     } else {
-      Animated.spring(slideAnim, {
-        toValue: 400,
+      Animated.timing(slideAnim, {
+        toValue: 500,
+        duration: 300,
         useNativeDriver: true,
-        tension: 65,
-        friction: 11,
-      }).start(() => {
-        setModalVisible(false);
-      });
+      }).start(() => setModalVisible(false));
     }
   }, [showProfile]);
+
+  const handleOpenChat = () => {
+    Animated.timing(slideAnim, {
+      toValue: 500,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => {
+      setModalVisible(false);
+      setShowChat(true);
+    });
+  };
+
+  const handleCloseChat = () => {
+    setShowChat(false);
+    toggleProfile();
+  };
 
   const isValidURL = (url: string | string[]) => {
     return typeof url === "string" && url.startsWith("http");
@@ -75,76 +90,100 @@ export default function ProfileModal({
   const insets = useSafeAreaInsets();
 
   return (
-    <Modal
-      transparent={true}
-      visible={modalVisible}
-      onRequestClose={() => {
-        toggleProfile();
-      }}
-      animationType="none"
-      statusBarTranslucent
-    >
-      <View style={styles.container}>
-        <Animated.View
-          style={[
-            styles.profileOverlay,
-            {
-              transform: [{ translateX: slideAnim }],
-            },
-          ]}
-        >
-          <View
-            style={{
-              marginTop: insets.top,
-              flexDirection: "row",
-              justifyContent: "space-between",
-            }}
+    <>
+      <Modal
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          toggleProfile();
+        }}
+        animationType="none"
+        statusBarTranslucent
+      >
+        <View style={styles.container}>
+          <Animated.View
+            style={[
+              styles.profileOverlay,
+              { transform: [{ translateX: slideAnim }] },
+            ]}
           >
-            <TouchableOpacity onPress={toggleProfile}>
-              <AntDesign name="arrowleft" size={28} color="black" />
-            </TouchableOpacity>
-            {Number(userId) === storedUserId && (
-              <TouchableOpacity
-                onPress={() => showToast("Es una vista previa de tu perfil")}
-              >
-                <AntDesign name="info" size={28} color="black" />
+            <View
+              style={{
+                marginTop: insets.top,
+                flexDirection: "row",
+                justifyContent: "space-between",
+              }}
+            >
+              <TouchableOpacity onPress={toggleProfile}>
+                <AntDesign name="arrowleft" size={28} color="black" />
               </TouchableOpacity>
-            )}
-          </View>
-
-          <View style={styles.profile}>
-            <Image
-              style={styles.userImage}
-              source={
-                isValidURL(userImage)
-                  ? { uri: userImage }
-                  : DEFAULT_PROFILE_IMAGE
-              }
-            />
-            <View style={styles.userInfo}>
-              <Text style={styles.userName}>{userName}</Text>
-              <Text style={styles.userDescription}>
-                {city} - {country}
-              </Text>
+              {Number(userId) === storedUserId && (
+                <TouchableOpacity
+                  onPress={() => showToast("Es una vista previa de tu perfil")}
+                >
+                  <AntDesign name="info" size={28} color="black" />
+                </TouchableOpacity>
+              )}
             </View>
-            {Number(userId) !== storedUserId && (
-              <TouchableOpacity>
-                <Feather name="message-square" size={24} color="black" />
-              </TouchableOpacity>
-            )}
-          </View>
 
-          <View>
-            <Text style={{ fontWeight: "bold", marginTop: 20 }}>Mascotas:</Text>
-            {pets.map(({ id, name }: Pets) => ( 
-              <View key={id} style={{ marginVertical: 10 }}>
-                <Text>Nombre: {name}</Text>
+            <View style={styles.profile}>
+              <Image
+                style={styles.userImage}
+                source={
+                  isValidURL(userImage)
+                    ? { uri: userImage }
+                    : DEFAULT_PROFILE_IMAGE
+                }
+              />
+              <View style={styles.userInfo}>
+                <Text style={styles.userName}>{userName}</Text>
+                <Text style={styles.userDescription}>
+                  {city} - {country}
+                </Text>
               </View>
-            ))}
-          </View>
-        </Animated.View>
-      </View>
-    </Modal>
+              {Number(userId) !== storedUserId && (
+                <TouchableOpacity onPress={handleOpenChat}>
+                  <Feather name="message-square" size={24} color="black" />
+                </TouchableOpacity>
+              )}
+            </View>
+            <View style={{ marginTop: 20 }}>
+              {/*Un acordion para Mascotas*/}
+              <AccordionItem
+                title="Mascotas"
+                headerIcon={
+                  <MaterialIcons name="pets" size={24} color="black" />
+                }
+                headerRightContent={<Text>({pets.length})</Text>}
+              >
+                {pets.map(({ id, name, imageUrl }: Pets) => (
+                  <View key={id} style={styles.petItem}>
+                    <Image
+                      style={styles.petImage}
+                      height={60}
+                      width={60}
+                      source={{ uri: imageUrl }}
+                    />
+                    <Text style={styles.petName}>Nombre: {name}</Text>
+                  </View>
+                ))}
+              </AccordionItem>
+              {/*Un acordion para Adopciones*/}
+              <AccordionItem title="Adopciones">
+                <Text>Adopciones</Text>
+              </AccordionItem>
+            </View>
+          </Animated.View>
+        </View>
+      </Modal>
+
+      <ModalChat
+        receiverId={userId}
+        userName={userName}
+        visible={showChat}
+        onClose={handleCloseChat}
+      />
+    </>
   );
 }
 
@@ -189,5 +228,18 @@ const styles = StyleSheet.create({
   userDescription: {
     fontSize: 14,
     color: "#777",
+  },
+  petItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    marginVertical: 10,
+    paddingHorizontal: 10,
+  },
+  petImage: {
+    borderRadius: 30,
+  },
+  petName: {
+    fontSize: 16,
   },
 });

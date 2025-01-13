@@ -1,4 +1,4 @@
-import UpdateUserForm from "@/components/UpdateUserForm";
+import UpdateUserForm from "../../components/user/UpdateUserForm";
 import {
   ErrorProps,
   FormDataProps,

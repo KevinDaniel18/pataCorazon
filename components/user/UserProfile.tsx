@@ -1,4 +1,4 @@
-import { View, StyleSheet, Text} from "react-native";
+import { View, StyleSheet, Text } from "react-native";
 
 import { ProfileModalProps } from "@/types/profileModalTypes";
 import ProfileModal from "@/components/ProfileModal";
@@ -14,6 +14,4 @@ export default function UserProfile({
   );
 }
 
-const styles = StyleSheet.create({
- 
-});
+const styles = StyleSheet.create({});

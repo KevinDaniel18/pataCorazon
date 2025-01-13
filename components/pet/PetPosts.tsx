@@ -1,4 +1,10 @@
-import { deletePetPosted, getPets } from "@/api/endpoint";
+import {
+  deletePetPosted,
+  getPets,
+  hasUserPetLiked,
+  likePet,
+  unlikePet,
+} from "@/api/endpoint";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
@@ -13,12 +19,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import AdoptionForm from "./AdoptionForm";
+import AdoptionForm from "../adoption/AdoptionForm";
 import * as SecureStore from "expo-secure-store";
 import PetPostsOptions from "./PetPostsOptions";
 import Animated, { LinearTransition } from "react-native-reanimated";
 import { supabase } from "@/api/supabase";
-import Comments from "./Comments";
+import Comments from "../comment/Comments";
+import { AntDesign } from "@expo/vector-icons";
 
 interface BadgeProps {
   text: string;
@@ -37,6 +44,7 @@ interface PostData {
   isAdopted: boolean;
   imageUrl: string;
   location: string;
+  likes: number;
   createdAt: string;
   owner: {
     id: number;
@@ -63,7 +71,8 @@ export default function PetPosts() {
   const [modalComment, setModalComment] = useState<{
     [key: number]: boolean;
   }>({});
-
+  const [petCount, setPetCount] = useState(0);
+  const [likedPets, setLikedPets] = useState<number[]>([]);
   const [selectedPetId, setSelectedPetId] = useState<number | null>(null);
   const [userId, setUserId] = useState<number | undefined>(undefined);
 
@@ -85,6 +94,13 @@ export default function PetPosts() {
       const res = await getPets();
 
       setPosts(res.data);
+      const likedIds = await Promise.all(
+        res.data.map(async (pet: { id: any }) => {
+          const liked = await hasUserPetLiked(pet.id);
+          return liked ? pet.id : null;
+        })
+      );
+      setLikedPets(likedIds.filter((id) => id !== null));
     } catch (error) {
       console.error(error);
     }
@@ -156,6 +172,42 @@ export default function PetPosts() {
     }
   }
 
+  const onLikePet = async (id: number) => {
+    await likePet(id);
+  };
+
+  const onUnlikePet = async (id: number) => {
+    await unlikePet(id);
+  };
+
+  const toggleLike = async (id: number) => {
+    const updatedData = posts.map((pet) => {
+      if (pet.id === id) {
+        const isCurrentlyLiked = likedPets.includes(id);
+        const updatedLikes = isCurrentlyLiked ? pet.likes - 1 : pet.likes + 1;
+        return { ...pet, likes: updatedLikes };
+      }
+      return pet;
+    });
+    setPosts(updatedData);
+    if (likedPets.includes(id)) {
+      await onUnlikePet(id);
+      setLikedPets((prev) => prev.filter((petId) => petId !== id));
+    } else {
+      await onLikePet(id);
+      setLikedPets((prev) => [...prev, id]);
+    }
+  };
+
+  function formatLikes(likes: number) {
+    if (likes >= 1_000_000) {
+      return (likes / 1_000_000).toFixed(1).replace(/\.0$/, "") + "M";
+    } else if (likes >= 1_000) {
+      return (likes / 1_000).toFixed(1).replace(/\.0$/, "") + "k";
+    }
+    return likes.toString();
+  }
+
   const renderPost = ({ item }: { item: PostData }) => {
     // const scaleAnim = new Animated.Value(0.95);
 
@@ -166,6 +218,7 @@ export default function PetPosts() {
     //   useNativeDriver: true,
     // }).start();
 
+    const isLiked = likedPets.includes(item.id);
     const calculateElapsedTime = (createdAt: string) => {
       const createdDate = new Date(createdAt);
       const now = new Date();
@@ -244,9 +297,18 @@ export default function PetPosts() {
         )}
 
         <View style={styles.postActions}>
-          <TouchableOpacity>
-            <Ionicons name="heart-outline" size={24} color="#fff" />
-          </TouchableOpacity>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+            <TouchableOpacity onPress={() => toggleLike(item.id)}>
+              <AntDesign
+                name={isLiked ? "heart" : "hearto"}
+                size={24}
+                color="#fff"
+              />
+            </TouchableOpacity>
+            <Text style={{ color: "#fff" }}>
+              {item.likes >= 1 ? formatLikes(item.likes) : null}
+            </Text>
+          </View>
           <TouchableOpacity onPress={() => openModalComment(item.id)}>
             <Ionicons name="chatbubble-outline" size={24} color="#fff" />
           </TouchableOpacity>

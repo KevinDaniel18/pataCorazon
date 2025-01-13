@@ -1,5 +1,5 @@
 import { View, SafeAreaView, StyleSheet } from "react-native";
-import PetPosts from "@/components/PetPosts";
+import PetPosts from "@/components/pet/PetPosts";
 import Header from "@/components/Header";
 
 export default function Index() {

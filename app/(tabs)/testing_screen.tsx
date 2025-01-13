@@ -1,6 +1,6 @@
+import UserProfile from "@/components/user/UserProfile";
 import React, { useState } from "react";
 import { StyleSheet, Text, Pressable, View, Modal } from "react-native";
-import UserProfile from "../user/user-profile";
 
 const TestingScreen = () => {
   const [showModal, setShowModal] = useState(false);

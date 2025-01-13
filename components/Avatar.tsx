@@ -12,7 +12,7 @@ import * as ImagePicker from "expo-image-picker";
 import { supabase } from "@/api/supabase";
 import { removeProfilePicture, updateProfilePicture } from "@/api/endpoint";
 import * as SecureStore from "expo-secure-store";
-import UserImageOption from "./UserImageOption";
+import UserImageOption from "./user/UserImageOption";
 
 interface Props {
   size: number;

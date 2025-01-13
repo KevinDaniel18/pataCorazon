@@ -11,7 +11,7 @@ import {
   Modal,
 } from "react-native";
 import ImageViewing from "react-native-image-viewing";
-import AdoptionRequest from "@/components/AdoptionRequest";
+import AdoptionRequest from "../../components/adoption/AdoptionRequest";
 import { useUser } from "@/hooks/user/UserContex";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";

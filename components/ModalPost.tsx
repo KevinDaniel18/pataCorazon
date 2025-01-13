@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, Text, Modal, StyleSheet, TouchableOpacity } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { PetForm } from "./PetForm";
+import { PetForm } from "./pet/PetForm";
 
 const ModalPost = ({ modalVisible, setModalVisible }: any) => {
   const [uploadMediaVisible, setUploadMediaVisible] = useState(false);

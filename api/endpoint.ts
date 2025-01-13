@@ -120,6 +120,22 @@ export function unlikeComment(id: number) {
 }
 
 export async function hasUserLiked(id: number) {
-  const res = await  instance.get(`/comments/${id}/liked`);
-  return res.data
+  const res = await instance.get(`/comments/${id}/liked`);
+  return res.data;
+}
+
+export function likePet(id: number) {
+  return instance.post(`/pets/${id}/like`);
+}
+export function unlikePet(id: number) {
+  return instance.post(`/pets/${id}/unlike`);
+}
+
+export async function hasUserPetLiked(id: number) {
+  const res = await instance.get(`/pets/${id}/liked`);
+  return res.data;
+}
+
+export function getMessages(receiverId: number) {
+  return instance.get("/chat/messages", { params: { receiverId } });
 }

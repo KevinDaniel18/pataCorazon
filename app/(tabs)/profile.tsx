@@ -8,7 +8,7 @@ import {
 import React, { useEffect } from "react";
 import Avatar from "@/components/Avatar";
 import { useUser } from "@/hooks/user/UserContex";
-import UserConfiguration from "@/components/UserConfiguration";
+import UserConfiguration from "../../components/user/UserConfiguration";
 
 const ProfileScreen = () => {
   const { userData } = useUser();
